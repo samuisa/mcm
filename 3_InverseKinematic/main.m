@@ -3,6 +3,7 @@ clc;
 close all;
 clear;
 addpath('include'); % put relevant functions inside the /include folder 
+addpath('include/utils');
 
 %% Compute the geometric model for the given manipulator
 iTj_0 = BuildTree();
