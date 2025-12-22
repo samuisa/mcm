@@ -1,0 +1,10 @@
+function [isRotationMatrix] = IsRotationMatrix(R)
+% The function checks that the input R is a valid rotation matrix, that is 
+% a valid element of SO(3).
+% Return true if R is a valid rotation matrix, false otherwise. In the
+% latter case, print a warning pointing out the failed check.
+
+
+
+
+end
