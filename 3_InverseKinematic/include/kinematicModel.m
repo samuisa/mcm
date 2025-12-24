@@ -40,6 +40,7 @@ classdef kinematicModel < handle
                 
                 elseif self.gm.jointType(j) == 1   % giunto prismatico
                     
+                    bJi(1:3,j) = [0;0;0];
                     % Parte lineare
                     bJi(4:6, j) = bTj(1:3, 3);
                 end
@@ -64,7 +65,7 @@ classdef kinematicModel < handle
         
             % bTt = self.gm.getToolTransformWrtBase();
             % 1. Jacobiana geometrica dell'end-effector (frame E)
-            bJi = self.getJacobianOfLinkWrtBase(self.gm.jointNumber);
+            bJe = self.getJacobianOfLinkWrtBase(self.gm.jointNumber);
         
             bTe = self.gm.getTransformWrtBase(self.gm.jointNumber);
             bRe = bTe(1:3,1:3);
@@ -74,9 +75,9 @@ classdef kinematicModel < handle
             b_r_et_skew = vecToSkew(b_r_et);
 
             S = [eye(3),    zeros(3,3); 
-                b_r_et_skew', eye(3)];
+                -b_r_et_skew, eye(3)];
 
-            self.J = S * bJi;
+            self.J = S * bJe;
 
             minrank = min(size(self.J));
             if rank(self.J) < minrank

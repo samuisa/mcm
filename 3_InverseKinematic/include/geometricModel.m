@@ -86,20 +86,29 @@ classdef geometricModel < handle
             % bTk : transformation matrix from the manipulator base to the k-th joint in
             % the configuration identified by iTj.
 
-            if k < 1 || k > self.jointNumber
-                error("Invalid index");
+                eps = 1e-6;
+    
+                if k < 1 || k > self.jointNumber
+                    error("Invalid index");
+                end
+            
+                bTk = eye(4);  % identity (base frame)
+            
+                for i = 1:k
+                    bTk = bTk * self.iTj(:,:,i);   % multiply in forward order
+                end
+    
+                for i = 1:4
+                    for j = 1:4
+                        if abs(bTk(i,j)) < eps
+                            bTk(i,j) = 0;
+                        end
+                    end
+                end
             end
-        
-            bTk = eye(4);  % identity (base frame)
-        
-            for i = 1:k
-                bTk = bTk * self.iTj(:,:,i);   % multiply in forward order
-            end
-
             %TO DO
         end
 
-    end
 end
 
 

@@ -26,27 +26,33 @@ classdef cartesianControl < handle
             % Outputs :
             % x_dot : cartesian reference for inverse kinematic control
 
-            bTt = self.gm.getToolTransformWrtBase();
-            tTg = inv(bTt) * bTg;
-            [h, theta] = RotToAngleAxis(tTg(1:3, 1:3));
-            
-            % error components wrt t
-            rho_tg = h*theta;
-            r_tg = tTg(1:3,4);
+            % Current tool pose
+    bTt = self.gm.getToolTransformWrtBase();
 
-            % error components wrt base
-            b_rho_tg = bTt(1:3,1:3) * rho_tg;
-            b_r_tg = bTt(1:3,1:3) * r_tg;
+    % Pose error expressed in tool frame
+    tTg = inv(bTt) * bTg;
 
-            % overall error wrt base
-            b_e_tg = [b_rho_tg ; b_r_tg];
-            
-            % Lambda gain matrix
-            lambda = [    self.k_a*eye(3),      zeros(3,3)
-                            zeros(3,3),      self.k_l*eye(3)     ];
+    % --- ORIENTATION ERROR (SO(3) logarithm) ---
+    R = tTg(1:3,1:3);
+    phi = so3Log(R);   % 3x1 vector (stable)
 
-            % x_dot computation (if the goal frame isn't moving)
-            x_dot = lambda * b_e_tg;
+    % --- POSITION ERROR ---
+    p = tTg(1:3,4);
+
+    % Error twist expressed in tool frame
+    e_t = [phi; p];
+
+    % Rotate error to base frame
+    bRt = bTt(1:3,1:3);
+    b_e = [ bRt * phi ;
+            bRt * p   ];
+
+    % Gain matrix
+    Lambda = [ self.k_a*eye(3), zeros(3,3);
+               zeros(3,3), self.k_l*eye(3) ];
+
+    % Cartesian reference velocity
+    x_dot = Lambda * b_e;
         end
     end
 end

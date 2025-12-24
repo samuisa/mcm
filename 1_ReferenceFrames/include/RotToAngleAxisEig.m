@@ -9,11 +9,11 @@ function [h, theta] = RotToAngleAxisEig(R)
          end
     end
     h = h/norm(h);
-    theta = acos((trace(R) - 1) / 2);
+    %theta = acos((trace(R) - 1) / 2);
 
-    %H = VecToSkew(h);
-    %cos_theta = (trace(R) - 1) / 2;
-    %sin_theta = -trace(H * R) / 2;
-    %theta = atan2(sin_theta, cos_theta); %  calculating theta with both sin and cos components
+    H = vecToSkew(h);
+    cos_theta = (trace(R) - 1) / 2;
+    sin_theta = -trace(H * R) / 2;
+    theta = atan2(sin_theta, cos_theta); %  calculating theta with both sin and cos components
     
 end

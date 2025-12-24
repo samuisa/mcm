@@ -96,8 +96,8 @@ disp('bTg');
 disp(bTg);
 
 % control proportional gain
-k_a = 0.4;
-k_l = 0.4;
+k_a = 0.8;
+k_l = 0.8;
 
 q = [pi/2, -pi/4, 0, -pi/4, 0, 0.15, pi/4]';
 
@@ -186,6 +186,8 @@ for i = t
 
     % Get the cartesian error given an input goal frame
     x_dot = cc.getCartesianReference(bTg);
+    disp('b_e');
+    disp(b_e);
     disp('x_dot');
     disp(x_dot);
 
@@ -198,8 +200,7 @@ for i = t
     % Compute desired joint velocities
 
     lambda = 0.01;
-    q_dot = km.J' * ((km.J*km.J' + lambda^2*eye(6)) \ x_dot);
-
+    q_dot = km.J' * (km.J*km.J' + lambda^2*eye(6)) \ x_dot;
     % disp('q_dot');
     % disp(q_dot);
 
@@ -240,7 +241,7 @@ for i = t
 
     pm.plotIter(gm, km, i, q_dot)
 
-    if(norm(x_dot(1:3)) < 0.01 && norm(x_dot(4:6)) < 0.01)
+    if(norm(b_e(1:3)) < 0.01 && norm(b_e(4:6)) < 0.01)
         disp('Reached Requested Pose')
         break
     else
