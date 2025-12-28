@@ -188,6 +188,9 @@ for i = t
     x_dot = cc.getCartesianReference(bTg);
     disp('x_dot');
     disp(x_dot);
+    disp('norma x_dot');
+    disp(norm(x_dot(1:3)));
+    disp(norm(x_dot(4:6)));
 
     % Update the jacobian matrix of the given model
     km.updateJacobian();
@@ -212,18 +215,15 @@ for i = t
     disp('x_dot_actual');
     disp(x_dot_ac);
 
-    % posizione del tool rispetto all'EE (in frame EE)
     r_ee_tool = gm.eTt(1:3,4);
 
-    % rotazione EE -> base
     bTe = gm.getTransformWrtBase(gm.jointNumber);
     bRee = bTe(1:3,1:3);
 
-    % vettore espresso nella base
     r_b = bRee * r_ee_tool;
 
-    v_ee = x_dot_ac(1:3);
-    omega_ee = x_dot_ac(4:6);
+    v_ee = x_dot_ac(4:6);
+    omega_ee = x_dot_ac(1:3);
 
     x_dot_ee = [omega_ee;
                 v_ee];

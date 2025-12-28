@@ -30,18 +30,15 @@ classdef kinematicModel < handle
                 bTj = self.gm.getTransformWrtBase(j);
                 bJi(:, j) = zeros(6, 1);
 
-                if self.gm.jointType(j) == 0   % giunto rotazionale
+                if self.gm.jointType(j) == 0
                     
-                    % Parte angolare
                     bJi(1:3, j) = bTj(1:3, 3);
                     
-                    % Parte lineare
                     bJi(4:6, j) = cross(bTj(1:3, 3), bTn(1:3, 4) - bTj(1:3, 4));
                 
-                elseif self.gm.jointType(j) == 1   % giunto prismatico
+                elseif self.gm.jointType(j) == 1
                     
                     bJi(1:3,j) = [0;0;0];
-                    % Parte lineare
                     bJi(4:6, j) = bTj(1:3, 3);
                 end
 
@@ -57,14 +54,11 @@ classdef kinematicModel < handle
                     end
                 end
             end
-            % self.J = bJi;
         end
 
         function updateJacobian(self)
             %% Update Jacobian function
         
-            % bTt = self.gm.getToolTransformWrtBase();
-            % 1. Jacobiana geometrica dell'end-effector (frame E)
             bJe = self.getJacobianOfLinkWrtBase(self.gm.jointNumber);
         
             bTe = self.gm.getTransformWrtBase(self.gm.jointNumber);
