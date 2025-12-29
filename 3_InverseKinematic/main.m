@@ -9,7 +9,7 @@ addpath('include/utils');
 iTj_0 = BuildTree();
 
 %disp('iTj_0')
-%disp(iTj_0);
+%disp(iTj_0)
 jointType = [0 0 0 0 0 1 0]; % specify two possible link type: Rotational, Prismatic.
 q0 = [0 0 0 0 0 0 0]';
 
@@ -27,25 +27,25 @@ e_r_te = [0.3; 0.1; 0];
 eTt = [eRt, e_r_te; 0,0,0,1];
 
 disp('eTt')
-disp(eTt);
+disp(eTt)
 
 %% Initialize Geometric Model (GM) and Kinematic Model (KM)
 
 % Initialize geometric model with q0
-gm = geometricModel(iTj_0,jointType,eTt);
+gm = geometricModel(iTj_0,jointType,eTt)
 
 % Update direct geometry given q0
-gm.updateDirectGeometry(q0);
+gm.updateDirectGeometry(q0)
 
 % Initialize the kinematic model given the goemetric model
-km = kinematicModel(gm);
+km = kinematicModel(gm)
 
-bTt = gm.getToolTransformWrtBase();
+bTt = gm.getToolTransformWrtBase()
 
-disp("eTt");
-disp(eTt);
-disp('bTt q = 0');
-disp(bTt);
+disp("eTt")
+disp(eTt)
+disp('bTt q = 0')
+disp(bTt)
 
 for j=1:gm.jointNumber
     bTi(:,:,j) = gm.getTransformWrtBase(j); 
@@ -92,25 +92,25 @@ bOg = [0.2; -0.7; 0.3];
 theta = pi/2;
 bRg = YPRToRot(0,theta,0);
 bTg = [bRg, bOg; 0, 0, 0, 1]; 
-disp('bTg');
-disp(bTg);
+disp('bTg')
+disp(bTg)
 
 % control proportional gain
-k_a = 0.4;
-k_l = 0.4;
+k_a = 0.8;
+k_l = 0.8;
 
 q = [pi/2, -pi/4, 0, -pi/4, 0, 0.15, pi/4]';
 
-gm.updateDirectGeometry(q);
+gm.updateDirectGeometry(q)
 
 bTt = gm.getToolTransformWrtBase();
 
-disp('bTt q = q');
-disp(bTt);
+disp('bTt q = q')
+disp(bTt)
 
 bT1 = gm.getTransformWrtBase(7);
-disp('bT1');
-disp(bT1);
+disp('bT1')
+disp(bT1)
 
 for j=1:gm.jointNumber
     bTi(:,:,j) = gm.getTransformWrtBase(j); 
@@ -160,7 +160,7 @@ cc = cartesianControl(gm, k_a, k_l);
 % Simulation variables
 samples = 100;
 t_start = 0.0;
-t_end = 10.0;
+t_end = 15.0;
 dt = (t_end-t_start)/samples;
 t = t_start:dt:t_end; 
 
@@ -199,12 +199,10 @@ for i = t
 
     %% INVERSE KINEMATICS
     % Compute desired joint velocities
+    q_dot = pinv(km.J)*x_dot;
 
-    lambda = 0.01;
-    q_dot = km.J' * ((km.J*km.J' + lambda^2*eye(6)) \ x_dot);
-
-    % disp('q_dot');
-    % disp(q_dot);
+    % disp('q_dot')
+    % disp(q_dot)
 
     % simulating the robot
     q = KinematicSimulation(q, q_dot, dt, qmin, qmax);
@@ -212,8 +210,8 @@ for i = t
     % disp(q);
 
     x_dot_ac = km.J * q_dot;
-    disp('x_dot_actual');
-    disp(x_dot_ac);
+    disp('x_dot_actual')
+    disp(x_dot_ac)
 
     r_ee_tool = gm.eTt(1:3,4);
 
@@ -228,15 +226,15 @@ for i = t
     x_dot_ee = [omega_ee;
                 v_ee];
 
-    disp('ee velocity');
-    disp(x_dot_ee);
+    disp('ee velocity')
+    disp(x_dot_ee)
 
     v_tool = v_ee + cross(omega_ee, r_b);
     omega_tool = omega_ee;
 
     x_dot_tool = [omega_tool; v_tool];
-    disp('tool velocity');
-    disp(x_dot_tool);
+    disp('tool velocity')
+    disp(x_dot_tool)
 
     pm.plotIter(gm, km, i, q_dot)
 

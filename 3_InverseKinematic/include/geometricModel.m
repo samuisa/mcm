@@ -105,9 +105,8 @@ classdef geometricModel < handle
                         end
                     end
                 end
-            end
-            %TO DO
         end
+    end
 
 end
 
