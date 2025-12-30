@@ -88,7 +88,7 @@ hold off
 
 %% Define the goal frame and initialize cartesian control
 % Goal definition 
-bOg = [0.2; -0.7; 0.3];
+bOg = [0.2; -0.8; 0.3];
 theta = pi/2;
 bRg = YPRToRot(0,theta,0);
 bTg = [bRg, bOg; 0, 0, 0, 1]; 
@@ -160,7 +160,7 @@ cc = cartesianControl(gm, k_a, k_l);
 % Simulation variables
 samples = 100;
 t_start = 0.0;
-t_end = 15.0;
+t_end = 10.0;
 dt = (t_end-t_start)/samples;
 t = t_start:dt:t_end; 
 

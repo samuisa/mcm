@@ -64,6 +64,9 @@ classdef kinematicModel < handle
             bTe = self.gm.getTransformWrtBase(self.gm.jointNumber);
             bRe = bTe(1:3,1:3);
 
+            bTt = self.gm.getToolTransformWrtBase();
+            bRt = bTt(1:3,1:3);
+
             r_et = self.gm.eTt(1:3,4); 
             b_r_et = bRe * r_et;
             b_r_et_skew = vecToSkew(b_r_et);
