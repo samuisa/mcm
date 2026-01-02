@@ -178,74 +178,59 @@ show_simulation = true;
 pm = plotManipulators(show_simulation);
 pm.initMotionPlot(t, bTg(1:3,4));
 
+history.t = [];
+history.x_dot_tool = [];
+history.x_dot_ee = [];
+
 %%%%%%% Kinematic Simulation %%%%%%%
 for i = t
-    % Updating transformation matrices for the new configuration 
-
     gm.updateDirectGeometry(q);
-
-    % Get the cartesian error given an input goal frame
     x_dot = cc.getCartesianReference(bTg);
-    disp('x_dot');
-    disp(x_dot);
-    disp('norma x_dot');
-    disp(norm(x_dot(1:3)));
-    disp(norm(x_dot(4:6)));
-
-    % Update the jacobian matrix of the given model
+    
     km.updateJacobian();
-    % disp('km.J');
-    % disp(km.J);
-
+    
     %% INVERSE KINEMATICS
-    % Compute desired joint velocities
     q_dot = pinv(km.J)*x_dot;
-
-    % disp('q_dot')
-    % disp(q_dot)
-
-    % simulating the robot
     q = KinematicSimulation(q, q_dot, dt, qmin, qmax);
-    % disp('q');
-    % disp(q);
-
+    
+    % Calcolo velocità attuali
     x_dot_ac = km.J * q_dot;
-    disp('x_dot_actual')
-    disp(x_dot_ac)
-
+    
+    % Calcolo velocità Tool
     r_ee_tool = gm.eTt(1:3,4);
-
     bTe = gm.getTransformWrtBase(gm.jointNumber);
     bRee = bTe(1:3,1:3);
-
     r_b = bRee * r_ee_tool;
-
+    
     v_ee = x_dot_ac(4:6);
     omega_ee = x_dot_ac(1:3);
 
     x_dot_ee = [omega_ee;
                 v_ee];
-
-    disp('ee velocity')
-    disp(x_dot_ee)
-
+    
     v_tool = v_ee + cross(omega_ee, r_b);
     omega_tool = omega_ee;
-
     x_dot_tool = [omega_tool; v_tool];
-    disp('tool velocity')
-    disp(x_dot_tool)
+    
+    %% --- MODIFICA 2: Accumulo dati nel loop ---
+    list_x_dot_tool = x_dot_tool; 
+    
+    history.x_dot_tool = [history.x_dot_tool, list_x_dot_tool];
+    history.t = [history.t, i];
 
-    pm.plotIter(gm, km, i, q_dot)
-
+    list_x_dot_ee = x_dot_ee; 
+    
+    history.x_dot_ee = [history.x_dot_ee, list_x_dot_ee];
+    
+    pm.plotIter(gm, km, i, q_dot);
+    
     if(norm(x_dot(1:3)) < 0.01 && norm(x_dot(4:6)) < 0.01)
         disp('Reached Requested Pose')
         break
     else
-        disp('Requested Pose Not Reached')
-
+        % disp('Requested Pose Not Reached') % Commentato per pulizia output
     end
-
 end
 
 pm.plotFinalConfig(gm);
+plotVelocities(history.t, history.x_dot_tool, history.x_dot_ee);
