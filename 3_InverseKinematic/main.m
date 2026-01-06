@@ -108,10 +108,6 @@ bTt = gm.getToolTransformWrtBase();
 disp('bTt q = q')
 disp(bTt)
 
-bT1 = gm.getTransformWrtBase(7);
-disp('bT1')
-disp(bT1)
-
 for j=1:gm.jointNumber
     bTi(:,:,j) = gm.getTransformWrtBase(j); 
 end
