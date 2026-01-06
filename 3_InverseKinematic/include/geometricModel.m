@@ -92,10 +92,10 @@ classdef geometricModel < handle
                     error("Invalid index");
                 end
             
-                bTk = eye(4);  % identity (base frame)
+                bTk = eye(4);
             
                 for i = 1:k
-                    bTk = bTk * self.iTj(:,:,i);   % multiply in forward order
+                    bTk = bTk * self.iTj(:,:,i);
                 end
     
                 for i = 1:4

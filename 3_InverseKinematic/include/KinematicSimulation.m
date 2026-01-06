@@ -12,7 +12,6 @@ function [q_new] = KinematicSimulation(q, q_dot, ts, q_min, q_max)
 % Output:
 % q      : new joint configuration (nx1)
 
-    % Euler integration
     q_new = q + q_dot*ts;
     q_new = max(q_min, min(q_new, q_max));
 

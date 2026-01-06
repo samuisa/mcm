@@ -35,20 +35,19 @@ classdef cartesianControl < handle
             bRt = bTt(1:3,1:3);
         
             [h, theta] = RotToAngleAxis(tRg);
-            disp('h');
-            disp(h);
-            disp('theta');
-            disp(theta);
             rho_g = h*theta;
             b_rho_g = bRt * rho_g;
             b_r_g = bTg(1:3,4) - bTt(1:3,4);
-        
+
             b_e = [b_rho_g;
                    b_r_g];
+
+            disp('b_e');
+            disp(b_e);
         
             Lambda = [ self.k_a*eye(3), zeros(3,3);
                        zeros(3,3), self.k_l*eye(3) ];
-        
+            
             % Cartesian reference velocity
             x_dot = Lambda * b_e;
         end

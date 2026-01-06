@@ -32,15 +32,15 @@ disp(eTt)
 %% Initialize Geometric Model (GM) and Kinematic Model (KM)
 
 % Initialize geometric model with q0
-gm = geometricModel(iTj_0,jointType,eTt)
+gm = geometricModel(iTj_0,jointType,eTt);
 
 % Update direct geometry given q0
 gm.updateDirectGeometry(q0)
 
 % Initialize the kinematic model given the goemetric model
-km = kinematicModel(gm)
+km = kinematicModel(gm);
 
-bTt = gm.getToolTransformWrtBase()
+bTt = gm.getToolTransformWrtBase();
 
 disp("eTt")
 disp(eTt)
@@ -187,32 +187,32 @@ for i = t
     gm.updateDirectGeometry(q);
     x_dot = cc.getCartesianReference(bTg);
     
+    disp('x_dot');
+    disp(x_dot);
+    
     km.updateJacobian();
     
     %% INVERSE KINEMATICS
     q_dot = pinv(km.J)*x_dot;
     q = KinematicSimulation(q, q_dot, dt, qmin, qmax);
     
-    % Calcolo velocità attuali
-    x_dot_ac = km.J * q_dot;
-    
-    % Calcolo velocità Tool
+    % tool velocity computation
     r_ee_tool = gm.eTt(1:3,4);
     bTe = gm.getTransformWrtBase(gm.jointNumber);
     bRee = bTe(1:3,1:3);
     r_b = bRee * r_ee_tool;
-    
-    v_ee = x_dot_ac(4:6);
-    omega_ee = x_dot_ac(1:3);
 
-    x_dot_ee = [omega_ee;
-                v_ee];
+    bJe = km.getJacobianOfLinkWrtBase(gm.jointNumber);
     
-    v_tool = v_ee + cross(omega_ee, r_b);
-    omega_tool = omega_ee;
-    x_dot_tool = [omega_tool; v_tool];
-    
-    %% --- MODIFICA 2: Accumulo dati nel loop ---
+    x_dot_ee = bJe * q_dot;
+    x_dot_tool = km.J * q_dot;
+
+    disp('x_dot_ee');
+    disp(x_dot_ee);
+
+    disp('x_dot_tool');
+    disp(x_dot_tool);
+
     list_x_dot_tool = x_dot_tool; 
     
     history.x_dot_tool = [history.x_dot_tool, list_x_dot_tool];
@@ -221,14 +221,12 @@ for i = t
     list_x_dot_ee = x_dot_ee; 
     
     history.x_dot_ee = [history.x_dot_ee, list_x_dot_ee];
-    
+
     pm.plotIter(gm, km, i, q_dot);
     
     if(norm(x_dot(1:3)) < 0.01 && norm(x_dot(4:6)) < 0.01)
         disp('Reached Requested Pose')
         break
-    else
-        % disp('Requested Pose Not Reached') % Commentato per pulizia output
     end
 end
 
